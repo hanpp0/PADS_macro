@@ -3,6 +3,8 @@
 ; Date : 22.09.28
 ; Ver : 1.1
 ;
+CoordMode, Mouse, Screen
+;
 help()
 PADS_Chk:		; Pads is  already Running.. ?
 IfWinExist, ahk_exe powerpcb.exe
@@ -70,6 +72,8 @@ Cmd_Filter = ^!f	;filter - ctl+alt+f
 Cmd_StretchSeg = +s	;strech - shift+s
 Cmd_Properties = ^q ;Properties - ^q or alt+enter
 Cmd_Move = ^e		;Move
+Cmd_HighLight = ^h		;High light
+Cmd_UnHighLight = ^u		;High light
 
 ;
 F1::help()
@@ -135,8 +139,6 @@ Toggle_unit := !Toggle_unit
 If Toggle_unit
 	{
 		CMD_SEND("u", Cmd_U_mm)
-;		CMD_SEND(0, Cmd_G_mm)
-;		CMD_SEND(0, Cmd_Gd_mm)
 		send, %Cmd_G_mm%
 		send, %Cmd_Gd_mm%
 		return
@@ -165,6 +167,34 @@ i:: send, {PGUP}					;zoom in
 	return
 o:: send, {PGDN}					;zoom in
 	return
+h::									; high light net
+	MouseGetpos, vx, vy				; current mouse location keep
+;	MsgBox, %vx%,%vy%
+	send, {Esc}						; nothing
+
+	send, ^!f						; Filter
+;	sleep, 100
+	send, !N						; nothing
+;	sleep, 100
+	send, !t						; senect net
+;	sleep, 100
+	send, !c						; Clode
+;	sleep, 100
+
+	Click vx, vy				; mouse click! 
+;	sleep, 100
+	send, ^h						; High light
+;	MsgBox, %vx%,%vy%
+	sleep, 100
+	Mousemove vx,vy					; mouse movve 
+	return
+!h::			; Unhigh light
+	send, {Esc}						; nothing
+	send, {Esc}						; nothing
+	send, ^a						; nothing
+	sleep, 500
+	send, ^u						; High light
+	return
 ;
 ; Macro
 a:: ;select anything - Right click + down 1 time
@@ -180,7 +210,6 @@ x:: ;swap segment end
 	send, !s
 	send, {home}
 	Cnt_Typing(7,"DOWN")
-;	MouseClick, Left
 	return
 ;
 ; User Function
@@ -226,7 +255,7 @@ PADS macro
  1~8 - Layer Active
 
 * Shortcut 
- U - mm <> mil
+ U - mm <> mil, grid set
  R - Rotate
  F - Filter
  C - Color setting
@@ -240,6 +269,8 @@ PADS macro
 * Macro
  A - Select Anything
  X - Swap End 
+ H - Net high Light
+ !H - UnHigh Light
 
 * Macro Control
 F12 - Pause/Run
