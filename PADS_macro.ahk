@@ -81,7 +81,8 @@ Cmd_Flip = ^f				;Flip side
 Cmd_HighLight = ^h			;High light
 Cmd_UnHighLight = ^u		;High light
 ;Cmd_Menu = M				;Mouse Right Click!
-Cmd_SelectNet = {F6}		;Select Net
+;Cmd_SelectNet = {F6}		;Select Net
+;Cmd_SelectNet = !n			;Select Net
 Cmd_ViewNet = ^!n			;View Net
 Cmd_Outline = o{Enter}		;Outline view
 ;
@@ -133,8 +134,8 @@ Sub_Plane = p				; Plane
 ^4::send, z4{Enter}
 ^5::send, z5{Enter}
 ^6::send, z6{Enter}
-^7::send, zi{Enter}
-^8::send, zo{Enter}
+^7::send, z7{Enter}
+^8::send, z8{Enter}
 ^9::send, z{+}e{Enter}
 ; Cntl +
 ;
@@ -145,6 +146,8 @@ Sub_Plane = p				; Plane
 !4::send, z{+}4{Enter}
 !5::send, z{+}5{Enter}
 !6::send, z{+}6{Enter}
+!7::send, z{+}7{Enter}
+!8::send, z{+}8{Enter}
 ; Alt +
 ;
 ;* Shortcut
@@ -161,19 +164,21 @@ c::CMD_SEND(Cmd_ColorSet)			;Cntl+ALT+C - Color setting
 ;
 ; Macro
 e::	;Cntl + E - move
-	MouseClick						;선택후 move? or 선택과 동시 move?
+;	MouseClick						;선택후 ? or 선택과 동시 ?
 	CMD_SEND(Cmd_Move)
 	return
 h::	; high light net
 	send, {Esc}
+	Context(5,"DOWN")			; Select Net
+;	Sleep, DelayIn
 	MouseClick
-	CMD_SEND(Cmd_SelectNet)			; Select Net
 	CMD_SEND(Cmd_HighLight)			;High light
 	return
 !h:: ;unhigh light Net
 	send, {Esc}
+	Context(5,"DOWN")			; Select Net
+;	Sleep, DelayIn
 	MouseClick
-	CMD_SEND(Cmd_SelectNet)			; Select Net
 	CMD_SEND(Cmd_UnHighLight)		;UnHigh light
 	return
 n:: ;View - Net
@@ -225,11 +230,13 @@ x:: ;swap segment end
 	return
 ^p:: ;copper plane manager
 	MENU_CMD(Menu_Tools, Sub_Plane)
+	return
 !p:: ;Flood All
 	MENU_CMD(Menu_Tools, Sub_Plane)
 	send, {Enter}{Enter}
 	sleep, 1000
-	WinClose Pour					; Pour manager 창 닫기 - 창제목 일부
+	WinClose Pour					; Pour manager 창 닫기 - 창제목 일부 - V9.5
+	WinClose Copper					; Copper manager 창 닫기 - 창제목 일부 - VX
 	return
 ;
 ; Toggle
@@ -314,6 +321,7 @@ CMD_SEND(cmd)						; 상수/변수를 %%없이 바로 send
 ;Cnt_Typing(cnt, cmd)				; 마우스 우측클릭, DN key로 select
 Context(cnt, cmd)				; 마우스 우측클릭, DN key로 select
 {
+	send, {Esc}						; nothing
 	MouseClick, Right
 	loop %cnt%
 	{
@@ -330,18 +338,18 @@ MsgBox 48,PADS Macro,
 ==================================
  PADS macro
  Auther : HMS
- Date : 22.10.07
- Ver : 1.31
+ Date : 22.10.13
+ Ver : 1.32b
 ==================================
-*LAYER Active/Visible/Overlap
- 1~8 - Active Layer - Ln
+*LAYER Control(Visible/Over Lab/Active)
  0 - Invisible All Layer - Z-Z
  ` - Visible All Layer - ZZ
- ^1~^6 - Visible Layer only - Zn
- ^7 - Visible Inner only - ZI
- ^8 - Visible Outside only - ZO
- ^9 - Visible Electrical only - ZE
- !1~!6 - Overlap Layer - Z+n
+ ^1~^8 - Visible Layer only - Zn
+ ^9 - Visible All Electrical only - ZE
+
+ !1~!8 - Overlap Layer - Z+n
+
+ 1~8 - Active Layer - Ln
 
 *EDIT
  E - Move - ^E
@@ -364,9 +372,8 @@ MsgBox 48,PADS Macro,
 
  H - high Light Net(non click)
  !H - UnHigh Light Net(non click)
- !O - Outline view - Modeless: O
  !P - Flood All
- M - Measure
+ M - Measure(non click)
 
 *FILTER
  !A - Select Anything
@@ -377,6 +384,7 @@ MsgBox 48,PADS Macro,
  !B - Select Board
 
 *MODE TOGGLE
+ !O - Outline view - Modeless: O
  K - Any angle <> Diagonal - AA/AD
  T - Transparent View On <> Off
  U - mm <> mil toggle & grid set - UM/UMM
