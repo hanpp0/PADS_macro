@@ -145,6 +145,24 @@ MCmd_A_Orth = z{Backspace}AO{Enter}		;Orthogonal
 MCmd_DRC_On = z{Backspace}DRP{Enter}	;DRC On
 MCmd_DRC_Off = z{Backspace}DRO{Enter}	;DRC Off
 ;
+;PADS MACRO
+; Quick Select Filter
+Sel_Any = !+a
+Sel_Comp = !+b
+Sel_Doc = !+c
+Sel_Net = !+d
+Sel_Shape = !+e
+Sel_Trace = !+f
+;
+Cmd_Glue = !+g
+Cmd_RouteSplit = !+h
+Cmd_RouteSwapEnd = !+i
+Cmd_ShapeAddCorner = !+j
+Cmd_ShapeAddMiter = !+k
+Cmd_ShapeANBC = !+l
+Cmd_ShapeMoveMiter = !+m
+Cmd_ShapeSplit = !+n
+Cmd_UnGlue = !+o
 
 ;/////////////////////////////////////////////////////////////////////////////////
 ;
@@ -190,7 +208,9 @@ MCmd_DRC_Off = z{Backspace}DRO{Enter}	;DRC Off
 ;==================================================================================================
 ; Edit
 ;==================================================================================================
-+Esc::Send, {Esc}{Esc}+a
++Esc::
+	Send, {Esc}{Esc}
+	CMD_SEND(Sel_Any)
 ;
 Esc::
 	KeyWait, Esc					; 원래 2번 누르면 동작해야 되지만..
@@ -198,7 +218,8 @@ Esc::
 	If ErrorLevel
 		Send, {Esc}
 	Else
-		Send, {Esc}{Esc}{Esc}+a				; 3번 누르면..
+		Send, {Esc}{Esc}{Esc}				; 3번 누르면..
+		CMD_SEND(Sel_Any)
 	Return
 ;
 :*:e::^e ;Cmd_Move	;Cntl + E - move
@@ -209,25 +230,27 @@ j:: ; Add miter - mm
 ;	CMD_SEND(Cmd_U_mm)
 ;	CMD_SEND(Cmd_G_mm)
 ;	CMD_SEND(Cmd_Gd_mm)
+	CMD_SEND(Sel_Shape)				; select filter shape, PADS macro set first
+	sleep, 200
+	MouseClick						; select shape
 	if (val_miter = 0)
 	{
 		InputBox, val_miter,Default Miter,Value of Miter?,,200,150,,, ,,%val_miter%
 	}
-	Send, +s						; select filter shape, PADS macro set first
-	sleep, 200
-;	MouseClick						; select shape
-	Send, +!m						; Add Miter, PADS macro set first
-	sleep, 500
+;	sleep, 200
+;	Send, +!m						; Add Miter, PADS macro set first
+	CMD_SEND(Cmd_ShapeAddMiter)		; Add Miter, PADS macro set first
+	sleep, 300
 	Send, %val_miter%{Enter}				; miter value
 ;	MsgBox 48,,%val_miter%
 	return
 ;
 n::	; Assign Copper Net by Click(With PADS Macro)
-	Send, +s						; select filter DOC(shape), PADS macro set first
+	CMD_SEND(Sel_Shape)				; select filter shape, PADS macro set first
 	sleep, 200
 	MouseClick						; select shape
 ;	sleep, 100
-	Send, +!n						; Assign Net By Click, PADS macro set first
+	CMD_SEND(Cmd_ShapeANBC)			; Assign Net By Click, PADS macro set first
 	sleep, 500
 	MouseClick						; Assign Net By Click
 	return
@@ -237,7 +260,7 @@ o::pgdn								;zoom out
 !p:: ;Flood All
 	MENU_CMD(Menu_Tools, Sub_Plane)
 	send, {Enter}{Enter}
-	sleep, 1000
+	sleep, 500
 	WinClose Pour					; Pour manager 창 닫기 - 창제목 일부 - V9.5
 	WinClose Copper					; Copper manager 창 닫기 - 창제목 일부 - VX
 	return
@@ -246,7 +269,7 @@ r::^r								;Rotate
 ;==================================================================================================
 ; Setup
 ;==================================================================================================
-c::	CMD_SEND(Cmd_SetColor) 			;Set Color
+c::CMD_SEND(Cmd_SetColor) 			;Set Color
 !f::CMD_SEND(Cmd_Filter)				;Cntl+ALT+F - Filter
 ^l::MENU_CMD(Menu_Setup, Sub_Layer)		;Setup  - Layer
 ^n::CMD_SEND(Cmd_ViewNet) 			;View - Net
@@ -343,6 +366,24 @@ F12::
 F1::help()
 	return
 ;/////////////////////////////////////////////////////////////////////////////////
+;PADS Custom Macro Relative
+;/////////////////////////////////////////////////////////////////////////////////
++a::CMD_SEND(Sel_Any) 			;a
++c::CMD_SEND(Sel_Comp)			;b
++d::CMD_SEND(Sel_Doc)			;c
++n::CMD_SEND(Sel_Net)			;d
++s::CMD_SEND(Sel_Shape)			;e
++t::CMD_SEND(Sel_Trace)			;f
+g::CMD_SEND(Cmd_Glue)			;g
+s::CMD_SEND(RouteSplit)			;h
+x::CMD_SEND(Cmd_RouteSwapEnd)	;i
+a::CMD_SEND(Cmd_ShapeAddCorner)	;j
+;s::CMD_SEND(Cmd_ShapeAddMiter)	;k
+;n::CMD_SEND(Cmd_ShapeANBC)		;l
+;s::CMD_SEND(Cmd_ShapeMoveMiter);m
+!a::CMD_SEND(Cmd_ShapeSplit)	;n
+!g::CMD_SEND(Cmd_UnGlue)		;o
+;/////////////////////////////////////////////////////////////////////////////////
 ;User Function
 ;/////////////////////////////////////////////////////////////////////////////////
 MENU_CMD(mnu, cmd)					; 메뉴호출 + 단축키
@@ -372,7 +413,7 @@ MsgBox 48,PADS Macro,
  Date : 22.11.14
  Ver : 1.50
 ==================================
-V.1.50
+V.1.50a
 - With PADS Custom Macro
 
 *LAYER Control(Visible/Over Lab/Active)
@@ -384,7 +425,7 @@ V.1.50
  ^1~^8 - Active Layer - Ln
 
 *Edit
- ESC - Triple click - ESC+ESC+ESC+Selece All
+ ESC 3 Click - ESC+ESC+ESC+Selece All
  +ESC - ESC+ESC+Selece All
  E - Move - ^E
  I - Zoom in - PgUp
@@ -423,33 +464,26 @@ V.1.50
 ==================================
  PADS Custum Macro
 ==================================
-* Route Edit
-S - RouteSplit
-X - RouteSwapEnd
-
-*Select
-+A - SelAny
-+C - SelComp
-+D - SelDoc
-+N - SelNet
-+S - SelShape(PADS의 +S는 ^+S로변경)
-+T - SelTrace
-
-* Shape Edit
-!A - ShapeAddCorner
-!+M - ShapeAddMiter
-!+N - ShapeANBC
-!+S - ShapeMoveMiter
-A - ShapeSplit
-
-G - Glue
-!G - UnGlue
++A - SelAny			(PADS-!+a)
++C - SelComp			(PADS-!+b)
++D - SelDoc			(PADS-!+c)
++N - SelNet			(PADS-!+d)
++S - SelShape			(PADS-!+e)
++T - SelTrace			(PADS-!+f)
+G - Glue				(PADS-!+g)
+S - RouteSplit			(PADS-!+h)
+X - RouteSwapEnd		(PADS-!+i)
+!A - ShapeAddCorner		(PADS-!+j)
+!+M - ShapeAddMiter		(PADS-!+k)
+!+N - ShapeANBC			(PADS-!+l)
+!+S - ShapeMoveMiter		(PADS-!+m)
+A - ShapeSplit			(PADS-!+n)
+!G - UnGlue			(PADS-!+o)
 )
 }
-
 /* 특정 프로그램에서만 동작
 #IfWinActive ahk_exe SubtitleEdit.exe
-`::F18
+`::F18A
 !Tab::!Tab
 Tab::F19
 [::F20

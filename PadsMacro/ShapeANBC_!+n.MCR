@@ -1,1 +1,0 @@
-Application.ExecuteCommand("Assign Net By Click With Test")

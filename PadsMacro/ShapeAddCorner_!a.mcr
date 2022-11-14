@@ -1,1 +1,0 @@
-Application.ExecuteCommand("Add Corner To Drafting Segment")

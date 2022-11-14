@@ -1,1 +1,0 @@
-Application.ExecuteCommand("Add Mitres To Drafting")
