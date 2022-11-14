@@ -24,7 +24,7 @@ if(FileExist("D:\MentorGraphics\9.5PADS\SDD_HOME\Programs\powerpcb.exe"))
 	Run, powerpcb.exe, D:\MentorGraphics\9.5PADS\SDD_HOME\Programs\
 ;
 INIT:
-help()	; Help window
+;help()	; Help window
 ;SetCapsLockState, AlwaysOff
 SetScrollLockState, AlwaysOff
 ; macro is running only main program window & Disable in sub-window
