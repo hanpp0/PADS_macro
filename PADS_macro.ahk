@@ -6,10 +6,10 @@
 ;CoordMode, Mouse, Screen	; Mouse Absolute coordinate mode
 ;
 PADS_Chk:		; Pads is  already Running..?
-IfWinExist, ahk_exe powerpcb.exe	; If PADS is running..?
-goto PADS_Ok
+;IfWinExist, ahk_exe powerpcb.exe	; If PADS is running..?
+goto INIT
 
-PSDS_Run:		; PADS Find&Run
+APP_Run:		; PADS Find&Run
 if(FileExist("C:\MentorGraphics\PADSVX.2.7\SDD_HOME\common\win32\bin\powerpcb.exe"))
 	Run, powerpcb.exe, C:\MentorGraphics\PADSVX.2.7\SDD_HOME\common\win32\bin\
 if(FileExist("D:\MentorGraphics\PADSVX.2.7\SDD_HOME\common\win32\bin\powerpcb.exe"))
@@ -23,13 +23,18 @@ if(FileExist("C:\MentorGraphics\9.5PADS\SDD_HOME\Programs\powerpcb.exe"))
 if(FileExist("D:\MentorGraphics\9.5PADS\SDD_HOME\Programs\powerpcb.exe"))
 	Run, powerpcb.exe, D:\MentorGraphics\9.5PADS\SDD_HOME\Programs\
 ;
-PADS_Ok:
-help()	; Help window
-
+INIT:
+;help()	; Help window
+;SetCapsLockState, AlwaysOff
+SetScrollLockState, AlwaysOff
 ; macro is running only main program window & Disable in sub-window
 #SingleInstance force
 SetTitleMatchMode, 2
-#IfWinActive,PADS Layout		; Activate when sentence in the window title
+GroupAdd PADS, PADS Layout
+GroupAdd PADS, PADS Logic
+GroupAdd PADS, PADS Router
+GroupAdd PADS, Windows
+#IfWinActive ahk_group PADS
 ;
 #MaxThreadsPerHotkey 2			; Toggle
 ; shft - +
@@ -37,10 +42,35 @@ SetTitleMatchMode, 2
 ; Cntl - ^
 ; Win - #
 ;/////////////////////////////////////////////////////////////////////////////////
+;PADS Internal Macro
+;///////PADS custumize //////////////////
+; +S >> S -- Other Command - Stretch
+; !R -- Design Tool bar - Move Ref.des
+;
+;////////////////////////////////////////
+
+;G - Glue
+;!G - UnGlue
+;H - Highlight
+;!H - UnHighlight
+;Select Filter setting
+;+A - Select Any
+;+C - Select Componant
+;+S - Select Shape
+;+D - Select Document
 ;
 ;/////////////////////////////////////////////////////////////////////////////////
 global DelayIn  = 100			; default delay time for Key/mouse in
+global val_miter = 0
+; DEFIFNE CONSTANT
+; Common
+
+;/////////////////////////////////////////////////////////////////////////////////
+;// Constant
+;/////////////////////////////////////////////////////////////////////////////////
+; ** PADS Layout only
 ; Select Layer
+/*
 Cmd_Set_L1 = l1{Enter}
 Cmd_Set_L2 = l2{Enter}
 Cmd_Set_L3 = l3{Enter}
@@ -71,8 +101,9 @@ Cmd_Dispadd_4 = z{+}4{Enter}
 Cmd_Dispadd_5 = z{+}5{Enter}
 Cmd_Dispadd_6 = z{+}6{Enter}
 ;
-Cmd_ColorSet = ^!c			;color set - ctl+alt+c
-Cmd_Rotate = ^r				;rotate - ctl+r
+*/
+Cmd_SetColor = ^!c			;color set - ctl+alt+c
+;Cmd_Rotate = ^r				;rotate - ctl+r
 Cmd_Filter = ^!f			;filter - ctl+alt+f
 Cmd_StretchSeg = +s			;strech - shift+s
 Cmd_Properties = ^q 		;Properties - ^q or alt+enter
@@ -85,18 +116,15 @@ Cmd_UnHighLight = ^u		;High light
 ;Cmd_SelectNet = !n			;Select Net
 Cmd_ViewNet = ^!n			;View Net
 Cmd_Outline = o{Enter}		;Outline view
+Cmd_EOV = e{Enter}			;End of Via
 ;
 Cmd_U_mm = umm{Enter}
-Cmd_U_mil = um{Enter}
+Cmd_U_mil = umm{Backspace}{Enter}	; UM for layout & router
 ; Grid toggle when unit toggle
 Cmd_G_mm = g0.1{Enter}
 Cmd_G_mil = g5{Enter}
 Cmd_Gd_mm = gd0.5{Enter}
 Cmd_Gd_mil = gd25{Enter}
-;
-;Angle
-Cmd_A_Any = AA{Enter}		;Any angle
-Cmd_A_Dia = AD{Enter}		;Diagonal
 ;
 Menu_File = !f
 Menu_Edit = !e
@@ -107,6 +135,15 @@ Sub_Origin = O				; Origin
 Sub_Layer = L				; Layer
 Sub_Plane = p				; Plane
 ;
+; Modeless Emulate
+;Angle
+Cmd_A_Any = AA{Enter}		;Any angle
+Cmd_A_Dia = AD{Enter}		;Diagonal
+
+
+CMD_DRC_ON = drp{Enter}
+CMD_DRC_Off = dro{Enter}
+;/////////////////////////////////////////////////////////////////////////////////
 
 ;/////////////////////////////////////////////////////////////////////////////////
 ;
@@ -115,86 +152,73 @@ Sub_Plane = p				; Plane
 ; Macro는 두가지 이상의 조합
 
 ;Key Remapping
-; no - layer Active
-:*:0::z-z{Enter}					; Display All Off
-:*:1::L1{Enter}
-:*:2::L2{Enter}
-:*:3::L3{Enter}
-:*:4::L4{Enter}
-:*:5::L5{Enter}
-:*:6::L6{Enter}
-:*:7::L7{Enter}
-:*:8::L8{Enter}
-`::send, z{+}z{Enter}				; Display All On
+
+; no - layer Add
+`::send, z {+}z{Enter}{Home}			; Display All On
+0::send, z -z{Enter}					; Display All Off
+1::send, z {+}1{Enter}
+2::send, z {+}2{Enter}
+3::send, z {+}3{Enter}
+4::send, z {+}4{Enter}
+5::send, z {+}5{Enter}
+6::send, z {+}6{Enter}
+7::send, z {+}7{Enter}
+8::send, z {+}8{Enter}
 ;
-; Cntl + no - layer only
-^1::send, z1{Enter}
-^2::send, z2{Enter}
-^3::send, z3{Enter}
-^4::send, z4{Enter}
-^5::send, z5{Enter}
-^6::send, z6{Enter}
-^7::send, z7{Enter}
-^8::send, z8{Enter}
-^9::send, z{+}e{Enter}
-; Cntl +
+; Alt + no - Layer Active
+!1::Send, z 1{Enter}
+!2::Send, z 2{Enter}
+!3::Send, z 3{Enter}
+!4::Send, z 4{Enter}
+!5::Send, z 5{Enter}
+!6::Send, z 6{Enter}
+!7::Send, z 7{Enter}
+!8::Send, z 8{Enter}
+!9::send, z e{Enter}
 ;
-; Alt + no - Add Layer
-!1::send, z{+}1{Enter}
-!2::send, z{+}2{Enter}
-!3::send, z{+}3{Enter}
-!4::send, z{+}4{Enter}
-!5::send, z{+}5{Enter}
-!6::send, z{+}6{Enter}
-!7::send, z{+}7{Enter}
-!8::send, z{+}8{Enter}
-; Alt +
+; Cntl + no - layer Active
+^1::send, l 1{Enter}
+^2::send, l 2{Enter}
+^3::send, l 3{Enter}
+^4::send, l 4{Enter}
+^5::send, l 5{Enter}
+^6::send, l 6{Enter}
+^7::send, l 7{Enter}
+^8::send, l 8{Enter}
 ;
-;* Shortcut
-:*:f::^f							;Cntl + F - Flip Side
-:*:i::{PGUP}						;zoom in
-:*:o::{pgdn}						;zoom out
-:*:r::^r							;Rotate
-:*:m::q{Enter}						;Measure
-:*:t::t{Enter}						;Transparent
-^f::CMD_SEND(Cmd_Filter)			;Cntl+ALT+F - Filter
-!o::CMD_SEND(Cmd_Outline)			;modeless: O - Outline View
-;$c::CMD_SEND(Cmd_ColorSet)			;Cntl+ALT+C - Color setting
-c::CMD_SEND(Cmd_ColorSet)			;Cntl+ALT+C - Color setting
+;==================================================================================================
+; Edit
+;==================================================================================================
++Esc::
+	Send, {Esc}{Esc}
+	CMD_SEND(Sel_Any)
 ;
-; Macro
-e::	;Cntl + E - move
-;	MouseClick						;선택후 ? or 선택과 동시 ?
-	CMD_SEND(Cmd_Move)
+/*
+;
+Esc::
+	KeyWait, Esc					; 원래 2번 누르면 동작해야 되지만..
+	KeyWait, Esc, D, T0.2			; SetTitleMatchMode를 사용하면 3번 연타해야 됨
+	If ErrorLevel
+		Send, {Esc}
+	Else
+		Send, {Esc}{Esc}{Esc}				; 3번 누르면..
+		CMD_SEND(Sel_Any)
+	Return
+*/
+;
+;
+:*:e::^e ;Cmd_Move	;Cntl + E - move
+:*:f::^f ;Cmd_flip	;Cntl + F - Flip side
+;
+^g:: ; Glue
+	Send, q{Enter}
+	Send, {Tab}{Tab}{Tab}{Tab}{Space}{Enter}
 	return
-h::	; high light net
-	send, {Esc}
-	Context(5,"DOWN")			; Select Net
-;	Sleep, DelayIn
-	MouseClick
-	CMD_SEND(Cmd_HighLight)			;High light
-	return
-!h:: ;unhigh light Net
-	send, {Esc}
-	Context(5,"DOWN")			; Select Net
-;	Sleep, DelayIn
-	MouseClick
-	CMD_SEND(Cmd_UnHighLight)		;UnHigh light
-	return
-n:: ;View - Net
-	CMD_SEND(Cmd_ViewNet)
-	return
-q::	;Cntl + Q - Properties
-	MouseClick
-	CMD_SEND(Cmd_Properties)
-	return
-s::	;Shift + S - stretch segment
-	send, {Esc}
-	MouseClick
-	CMD_SEND(Cmd_StretchSeg)
-	return
+;
+i::PGUP								;zoom in
+;
 ;Context menu control
-!a:: ;Select anything - Right click + down 1 time
+!a:: ;Select anything - Right click + down 1 timess
 	Context(1,"DOWN")			; Select
 	return
 !c:: ;Select Component - Right click + down 2 time
@@ -212,7 +236,7 @@ s::	;Shift + S - stretch segment
 !b:: ;Select Board - Right click + down 14 time
 	Context(14,"DOWN")			; Select
 	return
-;
+
 a:: ;move miter
 	MouseClick
 	Context(8,"DOWN")			;
@@ -221,37 +245,59 @@ x:: ;swap segment end
 	Context(8,"DOWN")
 	return
 ;
-; Macro - Cntl
-^l:: ;Setup  - Layer
-	MENU_CMD(Menu_Setup, Sub_Layer)
-	return
-^o:: ;New origin
-	MENU_CMD(Menu_Setup, Sub_Origin)
-	return
-^p:: ;copper plane manager
-	MENU_CMD(Menu_Tools, Sub_Plane)
-	return
+o::pgdn								;zoom out
+;
 !p:: ;Flood All
 	MENU_CMD(Menu_Tools, Sub_Plane)
 	send, {Enter}{Enter}
-	sleep, 1000
+	sleep, 500
 	WinClose Pour					; Pour manager 창 닫기 - 창제목 일부 - V9.5
 	WinClose Copper					; Copper manager 창 닫기 - 창제목 일부 - VX
 	return
 ;
-; Toggle
-;Toggle Angle Any <> Dia
-k::
+r::^r								;Rotate
+;s::CMD_SEND(Cmd_StretchSeg)
+;==================================================================================================
+; Setup
+;==================================================================================================
+c::CMD_SEND(Cmd_SetColor) 			;Set Color
+!f::CMD_SEND(Cmd_Filter)				;Cntl+ALT+F - Filter
+^l::MENU_CMD(Menu_Setup, Sub_Layer)		;Setup  - Layer
+^n::CMD_SEND(Cmd_ViewNet) 			;View - Net
+^o::MENU_CMD(Menu_Setup, Sub_Origin) 	;New origin
+^p::MENU_CMD(Menu_Tools, Sub_Plane) 	;copper plane manager
+:*:q::^q ;Cmd_Move	;Cntl + Q - Properties
+;==================================================================================================
+; Tool/Mode
+;==================================================================================================
+^d:: ;Toggle DRC On <> Off
+	Toggle_DRC := !Toggle_DRC
+	If Toggle_DRC
+		CMD_SEND(MCmd_DRC_On)
+	else
+		CMD_SEND(MCmd_DRC_Off)
+	return
+;
+h::^h				; high light net
+;
+!h::Send, ^u{Esc} 	;unhigh light Net
+;
+k:: ;Toggle Angle Any <> Dia
 	Toggle_Angle := !Toggle_Angle
 	If Toggle_Angle
-	{
-	CMD_SEND(Cmd_A_Any)
+		CMD_SEND(MCmd_A_Orth)
+	else
+		CMD_SEND(MCmd_A_Dia)
 	return
-	}
-	CMD_SEND(Cmd_A_Dia)
-	return
-;unit toggle
-u::
+;
+m::Send, q{Enter}					;Measure
+;
+!o::CMD_SEND(Cmd_Outline)			;modeless: O - Outline View
+;
+;
+t::Send, t{Enter}					;Transparent
+;
+u:: ;unit toggle
 	Toggle_unit := !Toggle_unit
 	If Toggle_unit
 	{
@@ -265,28 +311,40 @@ u::
 	CMD_SEND(Cmd_Gd_mil)
 	return
 ;
-;* Modeless Command
-lshift::
-	if (A_IsSuspended)								; Suspend?
+!v:: ;End of via Mode
+	send, {Esc}
+	CMD_SEND(Cmd_EOV)
+	return
+;==================================================================================================
+; Macro Control
+;==================================================================================================
++CapsLock::CapsLock
+;
+CapsLock::
+	Caps_state := GetKeyState("CapsLock", "T") 		; CapsLock이 켜져 있으면 참, 그렇지 않으면 거짓
+	if (!A_IsSuspended)								; Not Suspend?
 	{
-	return											; exit
+		Suspend										; Pause!
+		while GetKeyState("CapsLock", "p")			; Key Up 대기
+		{
+		}
 	}
-	Suspend											; Suspend!
-	while GetKeyState("lshift", "p")				; Key Up 대기
-	{
-	send, {shift Up}								; shift 누르기
-	}
-	send, {shift Up}								; shift 떼기
-	Suspend											; Replay!
+;	Sleep, 500
+	SetCapsLockState, % (Caps_State) ? "On" : "Off"
+	Suspend											; Run!
 	return
 ;
-;* Main Control
 F12::
 	Suspend
 	if (A_IsSuspended)
-		MsgBox 16,PADS Macro,Macro Pause!,0.5
+	{
+		MsgBox 16,PADS Macro,Pause!,0.5
+	}
 	else
-		MsgBox 64,PADS Macro,Macro Running!,0.5
+	{
+		MsgBox 64,PADS Macro,Reloading!,0.5
+		Reload
+	}
 	return
 ;
 ^F12::
@@ -339,19 +397,21 @@ MsgBox 48,PADS Macro,
  PADS macro
  Auther : HMS
  Date : 22.10.13
- Ver : 1.32b
+ Ver : 1.33a
 ==================================
 *LAYER Control(Visible/Over Lab/Active)
  0 - Invisible All Layer - Z-Z
- ` - Visible All Layer - ZZ
- ^1~^8 - Visible Layer only - Zn
- ^9 - Visible All Electrical only - ZE
+ `` - Visible All Layer - ZZ
+ !9 - Visible All Electrical only - ZE
+ 1~8 - Overlap Layer - Z+n
+ !1~!8 - Visible Layer only - Zn
+ ^1~^8 - Active Layer - Ln
 
- !1~!8 - Overlap Layer - Z+n
-
- 1~8 - Active Layer - Ln
-
-*EDIT
+*Edit
+ ESC 3 Click - ESC+ESC+ESC+Selece All
+ +ESC - ESC+ESC+Selece All
+ A - RouteSplit		(PADS-!+h)
+!A - ShapeSplit		(PADS-!+n)
  E - Move - ^E
  F - Flip Side - ^F
  I - Zoom in - PgUp
@@ -374,7 +434,7 @@ MsgBox 48,PADS Macro,
  !H - UnHigh Light Net(non click)
  !P - Flood All
  M - Measure(non click)
-
+ !V - End Of Via
 *FILTER
  !A - Select Anything
  !C - Select Component
