@@ -1,1 +1,1 @@
-Application.ExecuteCommand("Quick Filter Traces Pins Unroutes")
+Application.ExecuteCommand("Quick Filter Nets")

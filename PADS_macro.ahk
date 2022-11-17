@@ -61,14 +61,14 @@ GroupAdd PADS, PADS Router
 ;+D - Select Document
 ;
 ;/////////////////////////////////////////////////////////////////////////////////
+;// INIT Var
+;/////////////////////////////////////////////////////////////////////////////////
 global DelayIn  = 100			; default delay time for Key/mouse in
 global val_miter = 0
-; DEFIFNE CONSTANT
-; Common
-
-;/////////////////////////////////////////////////////////////////////////////////
-;// Constant
-;/////////////////////////////////////////////////////////////////////////////////
+global val_G_mm = 0
+global val_G_mil = 0
+global val_GD_mm = 0
+global val_GD_mil = 0
 ;/////////////////////////////////////////////////////////////////////////////////
 ;PADS Custom Macro Relative
 ;/////////////////////////////////////////////////////////////////////////////////
@@ -138,17 +138,9 @@ MCmd_DRC_On = z{Backspace}DRP{Enter}	;DRC On
 MCmd_DRC_Off = z{Backspace}DRO{Enter}	;DRC Off
 Cmd_Outline = o{Enter}		;Outline view
 Cmd_EOV = e{Enter}			;End of Via
-; Grid toggle when unit toggle
-Cmd_G_mm = g0.1{Enter}
-Cmd_G_mil = g5{Enter}
-Cmd_Gd_mm = gd0.5{Enter}
-Cmd_Gd_mil = gd25{Enter}
-;
 Cmd_U_mm = umm{Enter}
 Cmd_U_mil = umm{Backspace}{Enter}	; UM for layout & router
 Cmd_Via_Sel= v{Enter}
-;
-
 ;/////////////////////////////////////////////////////////////////////////////////
 ;Layer control
 ;/////////////////////////////////////////////////////////////////////////////////
@@ -304,15 +296,32 @@ u:: ;unit toggle
 	Toggle_unit := !Toggle_unit
 	If Toggle_unit
 	{
-	CMD_SEND(Cmd_U_mm)
-	CMD_SEND(Cmd_G_mm)
-	CMD_SEND(Cmd_Gd_mm)
+		CMD_SEND(Cmd_U_mm)			; set mm
+		if (val_GD_mm == 0)			; GD 설정한적이 없으면..?
+			InputBox, val_GD_mm,Default Display Grid of mm,Display Grid mm?(Disable:"-"),,200,150,,, ,,%val_GD_mm%
+		if (val_G_mm == 0) 			; 자동설정 사용하지 않는다면 skip
+			InputBox, val_G_mm,Default Grid of mm,Grid mm?,,200,150,,, ,,%val_G_mm%
+;
+		if (val_GD_mm != "-")		; 자동 설정 On?
+			Send, gd %val_GD_mm%{Enter}
+		if (val_G_mm != "-")		; 자동 설정 On?
+			Send, g %val_G_mm%{Enter}
+		return
+	}
+	else
+	{
+		CMD_SEND(Cmd_U_mil)				; set mil
+		if (val_GD_mil == 0)			; GD 설정한적이 없으면..?
+			InputBox, val_GD_mil,Default Display Grid of mil,Display Grid mil?(Disable:"-"),,200,150,,, ,,%val_GD_mil%
+		if (val_G_mil == 0)				; GD 설정한적이 없으면..?
+			InputBox, val_G_mil,Default Grid of mm,Grid mil?,,200,150,,, ,,%val_G_mil%
+;
+		if (val_GD_mil != "-")			; 자동 설정 On?
+			Send, gd %val_GD_mil%{Enter}
+		if (val_GD_mm != "-")
+			Send, g %val_G_mil%{Enter}
 	return
 	}
-	CMD_SEND(Cmd_U_mil)
-	CMD_SEND(Cmd_G_mil)
-	CMD_SEND(Cmd_Gd_mil)
-	return
 ;
 !v:: ;End of via Mode
 	CMD_SEND(Cmd_EOV)
@@ -396,10 +405,10 @@ MsgBox 48,PADS Macro,
  PADS macro
  Auther : HMS
  Date : 22.11.18
- Ver : 1.50e
+ Ver : 1.50f
 ==================================
-V.1.50e
-- S disable for modeless command
+V.1.50f
+- Grid Auto setting
 
 *LAYER Control(Visible/Over Lab/Active)
  0 - Invisible All Layer - Z-Z
@@ -446,7 +455,7 @@ V.1.50e
  M - Measure(clickless)
 !O - Outline view - Modeless: O
  T - Transparent View On <> Off
- U - mm <> mil toggle & grid set - UM/UMM
+ U - mm <> mil toggle & grid Auto setting - UM/UMM
 !V - End of Via mode
 
 *Select
