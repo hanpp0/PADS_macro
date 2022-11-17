@@ -175,35 +175,35 @@ Cmd_UnGlue = !+o
 ; no - layer Add
 `::send, z{+}z{Enter}{Home}			; Display All On
 0::send, z-z{Enter}					; Display All Off
-1::send, z{+}1{Enter}
-2::send, z{+}2{Enter}
-3::send, z{+}3{Enter}
-4::send, z{+}4{Enter}
-5::send, z{+}5{Enter}
-6::send, z{+}6{Enter}
-7::send, z{+}7{Enter}
-8::send, z{+}8{Enter}
+1::send, l 1{Enter}
+2::send, l 2{Enter}
+3::send, l 3{Enter}
+4::send, l 4{Enter}
+5::send, l 5{Enter}
+6::send, l 6{Enter}
+7::send, l 7{Enter}
+8::send, l 8{Enter}
 ;
-; Alt + no - Layer Active
-!1::Send, Z1{Enter}
-!2::Send, Z2{Enter}
-!3::Send, Z3{Enter}
-!4::Send, Z4{Enter}
-!5::Send, Z5{Enter}
-!6::Send, Z6{Enter}
-!7::Send, Z7{Enter}
-!8::Send, Z8{Enter}
-!9::send, Ze{Enter}
+; Alt + no - Layer Add
+!1::send, z{+}1{Enter}
+!2::send, z{+}2{Enter}
+!3::send, z{+}3{Enter}
+!4::send, z{+}4{Enter}
+!5::send, z{+}5{Enter}
+!6::send, z{+}6{Enter}
+!7::send, z{+}7{Enter}
+!8::send, z{+}8{Enter}
 ;
-; Cntl + no - layer Active
-^1::send, L1{Enter}
-^2::send, L2{Enter}
-^3::send, L3{Enter}
-^4::send, L4{Enter}
-^5::send, L5{Enter}
-^6::send, L6{Enter}
-^7::send, L7{Enter}
-^8::send, L8{Enter}
+; Cntl + no - Layer only
+^1::Send, z 1{Enter}
+^2::Send, z 2{Enter}
+^3::Send, z 3{Enter}
+^4::Send, z 4{Enter}
+^5::Send, z 5{Enter}
+^6::Send, z 6{Enter}
+^7::Send, z 7{Enter}
+^8::Send, z 8{Enter}
+^9::send, z e{Enter}
 ;
 ;==================================================================================================
 ; Edit
@@ -267,12 +267,15 @@ o::pgdn								;zoom out
 	return
 ;
 r::^r								;Rotate
-!s::CMD_SEND(Cmd_StretchSeg)
+s:: ; Shape move miter
+	CMD_SEND(Sel_Trace)				;f
+	CMD_SEND(Cmd_StretchSeg)
+	return
 ;==================================================================================================
 ; Setup
 ;==================================================================================================
 c::CMD_SEND(Cmd_SetColor) 			;Set Color
-!f::CMD_SEND(Cmd_Filter)				;Cntl+ALT+F - Filter
+^f::CMD_SEND(Cmd_Filter)				;Cntl+ALT+F - Filter
 ^l::MENU_CMD(Menu_Setup, Sub_Layer)		;Setup  - Layer
 ^n::CMD_SEND(Cmd_ViewNet) 			;View - Net
 ^o::MENU_CMD(Menu_Setup, Sub_Origin) 	;New origin
@@ -370,21 +373,21 @@ F1::help()
 ;/////////////////////////////////////////////////////////////////////////////////
 ;PADS Custom Macro Relative
 ;/////////////////////////////////////////////////////////////////////////////////
-+a::CMD_SEND(Sel_Any) 			;a
-+c::CMD_SEND(Sel_Comp)			;b
-+d::CMD_SEND(Sel_Doc)			;c
-+n::CMD_SEND(Sel_Net)			;d
-+s::CMD_SEND(Sel_Shape)			;e
-+t::CMD_SEND(Sel_Trace)			;f
-[::CMD_SEND(Cmd_Glue)			;g
-a::CMD_SEND(Cmd_RouteSplit)		;h
-x::CMD_SEND(Cmd_RouteSwapEnd)	;i
-;::CMD_SEND(Cmd_ShapeAddCorner)	;j  - Not used
-;::CMD_SEND(Cmd_ShapeAddMiter)	;k - use in N
-;::CMD_SEND(Cmd_ShapeANBC)		;l - use in J
-;::CMD_SEND(Cmd_ShapeMoveMiter);m - Not used
-!a::CMD_SEND(Cmd_ShapeSplit)	;n
-]::CMD_SEND(Cmd_UnGlue)			;o
++a::CMD_SEND(Sel_Any) 				;a
++c::CMD_SEND(Sel_Comp)				;b
++d::CMD_SEND(Sel_Doc)				;c
++n::CMD_SEND(Sel_Net)				;d
+;+s::CMD_SEND(Sel_Shape)			;e
++t::CMD_SEND(Sel_Trace)				;f
+[::CMD_SEND(Cmd_Glue)				;g
+a::CMD_SEND(Cmd_RouteSplit)			;h
+x::CMD_SEND(Cmd_RouteSwapEnd)		;i
+;::CMD_SEND(Cmd_ShapeAddCorner)		;j  - Not used
+;::CMD_SEND(Cmd_ShapeAddMiter)		;k - use in N
+;::CMD_SEND(Cmd_ShapeANBC)			;l - use in J
++s::CMD_SEND(Cmd_ShapeMoveMiter) 	;m - Not used
+!a::CMD_SEND(Cmd_ShapeSplit)		;n
+]::CMD_SEND(Cmd_UnGlue)				;o
 ;/////////////////////////////////////////////////////////////////////////////////
 ;User Function
 ;/////////////////////////////////////////////////////////////////////////////////
