@@ -69,40 +69,44 @@ global val_miter = 0
 ;/////////////////////////////////////////////////////////////////////////////////
 ;// Constant
 ;/////////////////////////////////////////////////////////////////////////////////
-; ** PADS Layout only
-; Select Layer
+;/////////////////////////////////////////////////////////////////////////////////
+;PADS Custom Macro Relative
+;/////////////////////////////////////////////////////////////////////////////////
+;PADS MACRO
+; Quick Select Filter
+Sel_Any = !+a
+Sel_Comp = !+b
+Sel_Doc = !+c
+Sel_Net = !+d
+Sel_Shape = !+e
+Sel_Trace = !+f
+Cmd_Glue = !+g
+Cmd_RouteSplit = !+h
+Cmd_RouteSwapEnd = !+i
+Cmd_ShapeAddCorner = !+j
+;Cmd_ShapeAddMiter = !+k
+Cmd_ShapeANBC = !+l
+Cmd_ShapeMoveMiter = !+m
+Cmd_ShapeSplit = !+n
+Cmd_UnGlue = !+o
 /*
-Cmd_Set_L1 = l1{Enter}
-Cmd_Set_L2 = l2{Enter}
-Cmd_Set_L3 = l3{Enter}
-Cmd_Set_L4 = l4{Enter}
-Cmd_Set_L5 = l5{Enter}
-Cmd_Set_L6 = l6{Enter}
-Cmd_Set_L7 = l7(Enter}
-Cmd_Set_L8 = l8{Enter}
-;
-;with alt
-Cmd_Disp_1 = z1{Enter}
-Cmd_Disp_2 = z2{Enter}
-Cmd_Disp_3 = z3{Enter}
-Cmd_Disp_4 = z4{Enter}
-Cmd_Disp_5 = z5{Enter}
-Cmd_Disp_6 = z6{Enter}
-Cmd_Disp_i = zi{Enter}
-Cmd_Disp_e = ze{Enter}
-Cmd_Disp_o = zo{Enter}
-Cmd_Dispall_off = z-z{Enter}
-Cmd_Dispall_on = zz{Enter}
-
-;with cntl
-Cmd_Dispadd_1 = z{+}1{Enter}
-Cmd_Dispadd_2 = z{+}2{Enter}
-Cmd_Dispadd_3 = z{+}3{Enter}
-Cmd_Dispadd_4 = z{+}4{Enter}
-Cmd_Dispadd_5 = z{+}5{Enter}
-Cmd_Dispadd_6 = z{+}6{Enter}
-;
++a::CMD_SEND(Sel_Any) 				;!+a
++c::CMD_SEND(Sel_Comp)				;!+b
++d::CMD_SEND(Sel_Doc)				;!+c
++n::CMD_SEND(Sel_Net)				;!+d
+;+s::CMD_SEND(Sel_Shape)			;!+e
++t::CMD_SEND(Sel_Trace)				;!+f
+[::CMD_SEND(Cmd_Glue)				;!+g
+a::CMD_SEND(Cmd_RouteSplit)			;!+h
+x::CMD_SEND(Cmd_RouteSwapEnd)		;!+i
+;::CMD_SEND(Cmd_ShapeAddCorner)		;!+j - Not used
+;::CMD_SEND(Cmd_ShapeAddMiter)		;!+k - use in N
+;::CMD_SEND(Cmd_ShapeANBC)			;!+l - use in J
++s::CMD_SEND(Cmd_ShapeMoveMiter) 	;!+m - Not used
+!a::CMD_SEND(Cmd_ShapeSplit)		;!+n
+]::CMD_SEND(Cmd_UnGlue)				;!+o
 */
+; ** PADS Layout only
 Cmd_SetColor = ^!c			;color set - ctl+alt+c
 ;Cmd_Rotate = ^r				;rotate - ctl+r
 Cmd_Filter = ^!f			;filter - ctl+alt+f
@@ -116,18 +120,6 @@ Cmd_UnHighLight = ^u		;High light
 ;Cmd_SelectNet = {F6}		;Select Net
 ;Cmd_SelectNet = !n			;Select Net
 Cmd_ViewNet = ^!n			;View Net
-Cmd_Outline = o{Enter}		;Outline view
-Cmd_EOV = e{Enter}			;End of Via
-;
-Cmd_U_mm = umm{Enter}
-Cmd_U_mil = umm{Backspace}{Enter}	; UM for layout & router
-; Grid toggle when unit toggle
-Cmd_G_mm = g0.1{Enter}
-Cmd_G_mil = g5{Enter}
-Cmd_Gd_mm = gd0.5{Enter}
-Cmd_Gd_mil = gd25{Enter}
-;
-
 Menu_File = !f
 Menu_Edit = !e
 Menu_View = !v
@@ -144,34 +136,22 @@ MCmd_A_Dia = z{Backspace}AD{Enter}		;Diagonal
 MCmd_A_Orth = z{Backspace}AO{Enter}		;Orthogonal
 MCmd_DRC_On = z{Backspace}DRP{Enter}	;DRC On
 MCmd_DRC_Off = z{Backspace}DRO{Enter}	;DRC Off
+Cmd_Outline = o{Enter}		;Outline view
+Cmd_EOV = e{Enter}			;End of Via
+; Grid toggle when unit toggle
+Cmd_G_mm = g0.1{Enter}
+Cmd_G_mil = g5{Enter}
+Cmd_Gd_mm = gd0.5{Enter}
+Cmd_Gd_mil = gd25{Enter}
 ;
-;PADS MACRO
-; Quick Select Filter
-Sel_Any = !+a
-Sel_Comp = !+b
-Sel_Doc = !+c
-Sel_Net = !+d
-Sel_Shape = !+e
-Sel_Trace = !+f
+Cmd_U_mm = umm{Enter}
+Cmd_U_mil = umm{Backspace}{Enter}	; UM for layout & router
+Cmd_Via_Sel= v{Enter}
 ;
-Cmd_Glue = !+g
-Cmd_RouteSplit = !+h
-Cmd_RouteSwapEnd = !+i
-Cmd_ShapeAddCorner = !+j
-Cmd_ShapeAddMiter = !+k
-Cmd_ShapeANBC = !+l
-Cmd_ShapeMoveMiter = !+m
-Cmd_ShapeSplit = !+n
-Cmd_UnGlue = !+o
 
 ;/////////////////////////////////////////////////////////////////////////////////
-;
+;Layer control
 ;/////////////////////////////////////////////////////////////////////////////////
-; Key remapping 은 단순히 키입력을 치환
-; Macro는 두가지 이상의 조합
-
-;Key Remapping
-
 ; no - layer Add
 `::send, z{+}z{Enter}{Home}			; Display All On
 0::send, z-z{Enter}					; Display All Off
@@ -208,11 +188,7 @@ Cmd_UnGlue = !+o
 ;==================================================================================================
 ; Edit
 ;==================================================================================================
-+Esc::
-	Send, {Esc}{Esc}
-	CMD_SEND(Sel_Any)
-;
-Esc::
+ Esc::
 	KeyWait, Esc					; 원래 2번 누르면 동작해야 되지만..
 	KeyWait, Esc, D, T0.2			; SetTitleMatchMode를 사용하면 3번 연타해야 됨
 	If ErrorLevel
@@ -222,30 +198,36 @@ Esc::
 		CMD_SEND(Sel_Any)
 	Return
 ;
-:*:e::^e ;Cmd_Move	;Cntl + E - move
-:*:f::^f ;Cmd_flip	;Cntl + F - Flip side
++Esc::
+	Send, {Esc}{Esc}
+	CMD_SEND(Sel_Any)
+;
+ a::CMD_SEND(Cmd_RouteSplit)			;!+h
+!a::CMD_SEND(Cmd_ShapeSplit)		;!+n
+;
+e::^e ;Cmd_Move	;Cntl + E - move
+f::^f ;Cmd_flip	;Cntl + F - Flip side
 ;
 i::PGUP								;zoom in
 ;
+/*
 j:: ; Add miter - mm
-;	CMD_SEND(Cmd_U_mm)
-;	CMD_SEND(Cmd_G_mm)
-;	CMD_SEND(Cmd_Gd_mm)
 	CMD_SEND(Sel_Shape)				; select filter shape, PADS macro set first
 	sleep, 200
 	MouseClick						; select shape
 	if (val_miter = 0)
 	{
 		InputBox, val_miter,Default Miter,Value of Miter?,,200,150,,, ,,%val_miter%
+		return
 	}
 ;	sleep, 200
 ;	Send, +!m						; Add Miter, PADS macro set first
 	CMD_SEND(Cmd_ShapeAddMiter)		; Add Miter, PADS macro set first
 	sleep, 300
-	Send, %val_miter%{Enter}				; miter value
-;	MsgBox 48,,%val_miter%
+	Send, %val_miter%{Enter}		; miter value
 	return
 ;
+*/
 n::	; Assign Copper Net by Click(With PADS Macro)
 	CMD_SEND(Sel_Shape)				; select filter shape, PADS macro set first
 	sleep, 200
@@ -267,20 +249,28 @@ o::pgdn								;zoom out
 	return
 ;
 r::^r								;Rotate
-s:: ; Shape move miter
+;
+s:: ; Stretch Segment
 	CMD_SEND(Sel_Trace)				;f
 	CMD_SEND(Cmd_StretchSeg)
 	return
+;
++s::CMD_SEND(Cmd_ShapeMoveMiter) 	;!+m - Not used
+;
+x::CMD_SEND(Cmd_RouteSwapEnd)		;!+i
+[::CMD_SEND(Cmd_Glue)				;!+g
+]::CMD_SEND(Cmd_UnGlue)				;!+o
 ;==================================================================================================
 ; Setup
 ;==================================================================================================
-c::CMD_SEND(Cmd_SetColor) 			;Set Color
+ c::CMD_SEND(Cmd_SetColor) 				;Set Color
 ^f::CMD_SEND(Cmd_Filter)				;Cntl+ALT+F - Filter
 ^l::MENU_CMD(Menu_Setup, Sub_Layer)		;Setup  - Layer
-^n::CMD_SEND(Cmd_ViewNet) 			;View - Net
+^n::CMD_SEND(Cmd_ViewNet) 				;View - Net
 ^o::MENU_CMD(Menu_Setup, Sub_Origin) 	;New origin
-^p::MENU_CMD(Menu_Tools, Sub_Plane) 	;copper plane manager
-:*:q::^q ;Cmd_Move	;Cntl + Q - Properties
+^p::MENU_CMD(Menu_Tools, Sub_Plane) 	;copper plane manage
+ q::^q 									;Cmd_Move	;Cntl + Q - Properties
+ v::CMD_SEND(Cmd_Via_Sel)				;Via select
 ;==================================================================================================
 ; Tool/Mode
 ;==================================================================================================
@@ -308,7 +298,6 @@ m::Send, q{Enter}					;Measure
 ;
 !o::CMD_SEND(Cmd_Outline)			;modeless: O - Outline View
 ;
-;
 t::Send, t{Enter}					;Transparent
 ;
 u:: ;unit toggle
@@ -325,10 +314,18 @@ u:: ;unit toggle
 	CMD_SEND(Cmd_Gd_mil)
 	return
 ;
-v:: ;End of via Mode
-	send, {Esc}
+!v:: ;End of via Mode
 	CMD_SEND(Cmd_EOV)
 	return
+;==================================================================================================
+; Select
+;==================================================================================================
++a::CMD_SEND(Sel_Any) 				;!+a
++c::CMD_SEND(Sel_Comp)				;!+b
++d::CMD_SEND(Sel_Doc)				;!+c
++f::CMD_SEND(Sel_Shape)				;!+e
++n::CMD_SEND(Sel_Net)				;!+d
++t::CMD_SEND(Sel_Trace)				;!+f
 ;==================================================================================================
 ; Macro Control
 ;==================================================================================================
@@ -370,24 +367,7 @@ F12::
 ;
 F1::help()
 	return
-;/////////////////////////////////////////////////////////////////////////////////
-;PADS Custom Macro Relative
-;/////////////////////////////////////////////////////////////////////////////////
-+a::CMD_SEND(Sel_Any) 				;a
-+c::CMD_SEND(Sel_Comp)				;b
-+d::CMD_SEND(Sel_Doc)				;c
-+n::CMD_SEND(Sel_Net)				;d
-;+s::CMD_SEND(Sel_Shape)			;e
-+t::CMD_SEND(Sel_Trace)				;f
-[::CMD_SEND(Cmd_Glue)				;g
-a::CMD_SEND(Cmd_RouteSplit)			;h
-x::CMD_SEND(Cmd_RouteSwapEnd)		;i
-;::CMD_SEND(Cmd_ShapeAddCorner)		;j  - Not used
-;::CMD_SEND(Cmd_ShapeAddMiter)		;k - use in N
-;::CMD_SEND(Cmd_ShapeANBC)			;l - use in J
-+s::CMD_SEND(Cmd_ShapeMoveMiter) 	;m - Not used
-!a::CMD_SEND(Cmd_ShapeSplit)		;n
-]::CMD_SEND(Cmd_UnGlue)				;o
+;
 ;/////////////////////////////////////////////////////////////////////////////////
 ;User Function
 ;/////////////////////////////////////////////////////////////////////////////////
@@ -415,46 +395,48 @@ MsgBox 48,PADS Macro,
 ==================================
  PADS macro
  Auther : HMS
- Date : 22.11.14
- Ver : 1.50d
+ Date : 22.11.18
+ Ver : 1.50e
 ==================================
-V.1.50d
+V.1.50e
 - S disable for modeless command
 
 *LAYER Control(Visible/Over Lab/Active)
  0 - Invisible All Layer - Z-Z
  `` - Visible All Layer - ZZ
- !9 - Visible All Electrical only - ZE
+!9 - Visible All Electrical only - ZE
  1~8 - Overlap Layer - Z+n
- !1~!8 - Visible Layer only - Zn
- ^1~^8 - Active Layer - Ln
+!1~!8 - Visible Layer only - Zn
+^1~^8 - Active Layer - Ln
+
+ ESC 3 Click - ESC+ESC+ESC+Selece All
++ESC - ESC+ESC+Selece All
 
 *Edit
- ESC 3 Click - ESC+ESC+ESC+Selece All
- +ESC - ESC+ESC+Selece All
- A - RouteSplit		(PADS-!+h)
-!A - ShapeSplit		(PADS-!+n)
+ A - RouteSplit (with PADS Macro)
+!A - ShapeSplit (with PADS Macro)
  E - Move - ^E
  F - Flip side
  I - Zoom in - PgUp
- J - Add Miter		(PADS-!+k)
- N - Assign Net By Click	(PADS-!+l)
+ N - Assign Net By Click (with PADS Macro)
  O - Zoom out - PgDn
 !P - Flood All
  R - Rotate - ^R
-!S - Route Stretch Segment - +S
- X - RouteSwapEnd		(PADS-!+i)
- [ - Glue				(PADS-!+g)
- ] - UnGlue			(PADS-!+o)
+ S - Route Stretch Segment - +S
++S - Shape Move Miter (with PADS Macro)
+ X - RouteSwapEnd (with PADS Macro)
+ [ - Glue (with PADS Macro)
+ ] - UnGlue (with PADS Macro)
 
 *SETUP
  C - Color setting - ^!C
-!F - Select Filter - !^F
+^F - Select Filter - !^F
 ^L - Setup Layers
 ^N - Setup Net
 ^O - Set New Origin
 ^P - Setup Plane
  Q - Properties - ^Q or !{Enter}
+ V - Via Select
 
 *Tool/Mode
 ^D - DRC On/Off
@@ -465,15 +447,15 @@ V.1.50d
 !O - Outline view - Modeless: O
  T - Transparent View On <> Off
  U - mm <> mil toggle & grid set - UM/UMM
- V - End of Via mode
+!V - End of Via mode
 
 *Select
-+A - SelAny(with PADS Macro)
-+C - SelComp(with PADS Macro)
-+D - SelDoc(with PADS Macro)
-+N - SelNet(with PADS Macro)
-+S - SelShape(with PADS Macro)
-+T - SelTrace(with PADS Macro)
++A - SelAny	(with PADS Macro)
++C - SelComp (with PADS Macro)
++D - SelDoc	(with PADS Macro)
++F - SelShape (with PADS Macro)
++N - SelNet	(with PADS Macro)
++T - SelTrace (with PADS Macro)
 
 *Macro CONTROL
  CapsLock - Instant Macro Pause/Replay
@@ -481,24 +463,25 @@ V.1.50d
 ^F12 - Exit
  F1 - This Help
 
-==================================
- PADS Custum Macro
-==================================
-+A - SelAny			(PADS-!+a)
-+C - SelComp			(PADS-!+b)
-+D - SelDoc			(PADS-!+c)
-+N - SelNet			(PADS-!+d)
-+S - SelShape			(PADS-!+e)
-+T - SelTrace			(PADS-!+f)
- [ - Glue				(PADS-!+g)
- A - RouteSplit			(PADS-!+h)
- X - RouteSwapEnd		(PADS-!+i)
-;ShapeAddCorner			(PADS-!+j) - Not used
-;ShapeAddMiter			(PADS-!+k) - use in J
-;ShapeANBC			(PADS-!+l) - use in N
-;ShapeMoveMiter			(PADS-!+m) - Not used
-!A - ShapeSplit			(PADS-!+n)
- ] - UnGlue			(PADS-!+o)
+=================================================
+ PADS Custum Macro(Must Preset!)
+=================================================
+Function  		PADS			ROUTER
+-------------------------------------------------
+SelAny			(PADS-!+a)
+SelComp			(PADS-!+b)
+SelDoc			(PADS-!+c)
+SelNet			(PADS-!+d)
+SelShape		(PADS-!+e)
+SelTrace		(PADS-!+f)
+Glue			(PADS-!+g)
+RouteSplit		(PADS-!+h)
+RouteSwapEnd	(PADS-!+i)
+;ShapeAddCorner	(PADS-!+j) - 자주사용하지 않으니..
+ShapeANBC		(PADS-!+l) - use in N
+ShapeMoveMiter	(PADS-!+m)
+ShapeSplit		(PADS-!+n)
+UnGlue			(PADS-!+o)
 )
 }
 /* 특정 프로그램에서만 동작
