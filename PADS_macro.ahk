@@ -33,7 +33,6 @@ SetTitleMatchMode, 2
 GroupAdd PADS, PADS Layout
 GroupAdd PADS, PADS Logic
 GroupAdd PADS, PADS Router
-GroupAdd PADS, Windows
 #IfWinActive ahk_group PADS
 ;
 #MaxThreadsPerHotkey 2			; Toggle
@@ -154,37 +153,27 @@ CMD_DRC_Off = dro{Enter}
 ;Key Remapping
 
 ; no - layer Add
-`::send, z {+}z{Enter}{Home}			; Display All On
-0::send, z -z{Enter}					; Display All Off
-1::send, z {+}1{Enter}
-2::send, z {+}2{Enter}
-3::send, z {+}3{Enter}
-4::send, z {+}4{Enter}
-5::send, z {+}5{Enter}
-6::send, z {+}6{Enter}
-7::send, z {+}7{Enter}
-8::send, z {+}8{Enter}
+`::send, z{+}z{Enter}{Home}			; Display All On
+0::send, z-z{Enter}					; Display All Off
+1::send, z{+}1{Enter}l1{Enter}
+2::send, z{+}2{Enter}l2{Enter}
+3::send, z{+}3{Enter}l3{Enter}
+4::send, z{+}4{Enter}l4{Enter}
+5::send, z{+}5{Enter}l5{Enter}
+6::send, z{+}6{Enter}l6{Enter}
+7::send, z{+}7{Enter}l7{Enter}
+8::send, z{+}8{Enter}l8{Enter}
 ;
-; Alt + no - Layer Active
-!1::Send, z 1{Enter}
-!2::Send, z 2{Enter}
-!3::Send, z 3{Enter}
-!4::Send, z 4{Enter}
-!5::Send, z 5{Enter}
-!6::Send, z 6{Enter}
-!7::Send, z 7{Enter}
-!8::Send, z 8{Enter}
-!9::send, z e{Enter}
-;
-; Cntl + no - layer Active
-^1::send, l 1{Enter}
-^2::send, l 2{Enter}
-^3::send, l 3{Enter}
-^4::send, l 4{Enter}
-^5::send, l 5{Enter}
-^6::send, l 6{Enter}
-^7::send, l 7{Enter}
-^8::send, l 8{Enter}
+; Cntl + no - Layer only
+^1::Send, z 1{Enter}
+^2::Send, z 2{Enter}
+^3::Send, z 3{Enter}
+^4::Send, z 4{Enter}
+^5::Send, z 5{Enter}
+^6::Send, z 6{Enter}
+^7::Send, z 7{Enter}
+^8::Send, z 8{Enter}
+^9::send, z e{Enter}
 ;
 ;==================================================================================================
 ; Edit
